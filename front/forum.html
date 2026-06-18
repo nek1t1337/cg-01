@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="display: flex; min-height: 100vh;flex-direction: column;">
+<div class="header" style=" display: flex; flex-direction: column; justify-content: start; align-items: start; height: 100px; width: 100%;">
+
+
+        <h1 style="font-size: 60px; color: white">Evil Corp</h1>
+
+</div>
+<div class="body"
+     style="border-top: 1px solid #ccc;; display: flex; flex:1; flex-direction: row; align-items: start; justify-content: start;  padding-top: 15%; width: 100%; gap: 100px">
+    <div style="display: flex; flex: 1;background-color: #4A4E52; padding: 20px; height: 500px; border-radius: 20px; width: 400px; flex-direction: column; gap: 20px;">
+
+        <div>
+            <div style="background-color: #D9D9D9; padding: 5px 10px; border-radius: 10px; margin-bottom: 10px; font-weight: bold;">Games</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">CS:GO</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">MINECRAFT</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">DOTA 2</div>
+            </div>
+        </div>
+
+        <div>
+            <div style="background-color: #D9D9D9; padding: 5px 10px; border-radius: 10px; margin-bottom: 10px; font-weight: bold;">Life</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">WORK</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">BEAUTIFUL PLACES</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">BUSINESS</div>
+            </div>
+        </div>
+
+        <div>
+            <div style="background-color: #D9D9D9; padding: 5px 10px; border-radius: 10px; margin-bottom: 10px; font-weight: bold;">Coding/IT</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">OS</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">NETWORK</div>
+                <div style="background-color: #D9D9D9; padding: 20px 5px; text-align: center; border-radius: 5px;">PYTHON</div>
+            </div>
+        </div>
+
+    </div>
+    <div style="background-color: #6D6464; width: 200px; height: 500px; border-radius: 30px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: white; font-family: sans-serif;">
+
+        <div style="font-size: 18px; margin-bottom: 10px;">Recent users</div>
+
+        <div style="color: #4CAF50;">stallman</div>
+        <div style="color: #F44336;">nix0n</div>
+        <div style="color: #4CAF50;">n1ghtm@re</div>
+
+    </div>
+</div>
+<footer style="display: flex; flex-direction: row;background: #D9D9D9; margin-top: 50px; padding: 20px; text-align: center; border-top: 1px solid #ccc;">
+    <div style="display: flex; flex-direction: column; width: 200px">
+        <p class="text-9"><span class="text-black">Evil Corporation INC</span></p>
+        <p class="text-10"><span class="text-black">about us</span></p>
+        <p class="text-11"><span class="text-black">what do we do</span></p>
+        <div class="rectangle-5-12"></div>
+
+    </div>
+    <p class="text-13"><span class="text-black">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</span>
+    </p>
+    <img src="https://imgs.search.brave.com/4zxVamYqfcBsaThy3KHi1CFMXaqS_DJfgAtD_JDlVyQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9haWZy/ZWVpbWFnZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI1/LzA0L3JpY2hhcmQt/c3RhbGxtYW4tMTAy/NHg2ODMucG5n" alt="stallman" style="width: 200px; height: 100px">
+
+</footer>
+<script>
+    document.querySelectorAll('.body > div:first-child > div > div > div').forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('mouseover', () => item.style.backgroundColor = '#bbb');
+        item.addEventListener('mouseout', () => item.style.backgroundColor = '#D9D9D9');
+
+        item.onclick = () => {
+            const category = item.innerText;
+
+            window.location.href = `/threads-page?category=${encodeURIComponent(category)}`;
+        };
+    });
+</script>
+</body>
+</html>

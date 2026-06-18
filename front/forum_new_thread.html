@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Thread - Evil Corporation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body style="margin: 0; background-color: #222; color: white; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column;">
+
+<header style="padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin: 0; font-size: 24px;">Evil Corporation</h1>
+    <nav style="display: flex; gap: 20px; font-size: 14px; opacity: 0.8;">
+<!--        <span>profile</span><span>settings</span><span>support</span>-->
+    </nav>
+</header>
+
+<main style="display: flex; gap: 30px; padding: 40px; flex: 1;">
+
+    <section style="flex: 3; background-color: #4A4E52; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px;">
+
+        
+        <input type="text" id="topic-input" placeholder="Topic name" style="padding: 12px; border-radius: 5px; border: none; font-size: 16px;">
+        <textarea id="content-input" placeholder="Text here" style="flex: 1; padding: 12px; border-radius: 5px; border: none; resize: none;"></textarea>
+
+        
+        <button onclick="publishThread()" style="padding: 10px 30px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; align-self: flex-start; cursor: pointer; font-weight: bold;">
+            Publish
+        </button>
+    </section>
+
+    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px;">
+        <h2 style="font-size: 18px; margin: 0 0 10px 0;">Recent users</h2>
+        <div style="color: #4CAF50;">stallman</div>
+        <div style="color: #F44336;">nix0n</div>
+        <div style="color: #4CAF50;">n1ghtm@re</div>
+    </aside>
+
+</main>
+
+
+<footer style="display: flex; flex-direction: row; background: #D9D9D9; margin-top: auto; padding: 20px; text-align: center; border-top: 1px solid #ccc; color: black;">
+    <div style="display: flex; flex-direction: column; width: 200px; margin-right: 20px;">
+        <p style="margin: 0; font-weight: bold;">Evil Corporation INC</p>
+        <p style="margin: 5px 0;">about us</p>
+        <p style="margin: 5px 0;">what do we do</p>
+    </div>
+    <div style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
+        <p style="margin: 0; font-style: italic; max-width: 60%;">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</p>
+        <img src="https://imgs.search.brave.com/4zxVamYqfcBsaThy3KHi1CFMXaqS_DJfgAtD_JDlVyQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9haWZy/ZWVpbWFnZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI1/LzA0L3JpY2hhcmQt/c3RhbGxtYW4tMTAy/NHg2ODMucG5n"
+             alt="stallman" style="width: 150px; height: auto; border-radius: 5px;">
+    </div>
+</footer>
+
+<script>
+    async function publishThread() {
+        const topicInput = document.getElementById('topic-input');
+        const contentInput = document.getElementById('content-input');
+
+        const topic = topicInput.value.trim();
+        const content = contentInput.value.trim();
+        const token = localStorage.getItem('token');
+
+        
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category');
+
+        if (!topic || !content) {
+            alert('Заполните название и текст темы!');
+            return;
+        }
+
+        if (!token) {
+            alert('Ошибка: Вы не авторизованы (токен не найден).');
+            return;
+        }
+
+        
+        const payload = { topic, content };
+        if (category) {
+            payload.category = category; 
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/threads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                
+                let redirectUrl = 'threads-page';
+                if (category) {
+                    redirectUrl += `?category=${encodeURIComponent(category)}`;
+                }
+                window.location.href = redirectUrl;
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                alert(`Ошибка: ${response.status} ${errData.message || ''}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Сервер недоступен. Проверьте консоль и server.js');
+        }
+    }
+</script>
+
+</body>
+</html>   

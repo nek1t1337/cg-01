@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body style="margin: 0; background-color: #222; color: white; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column;">
+
+<header style="padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
+    <h1 style="margin: 0; font-size: 24px;">Evil Corporation</h1>
+    <nav style="display: flex; gap: 20px; font-size: 14px; opacity: 0.8;">
+<!--        <span>profile</span><span>settings</span><span>support</span>-->
+    </nav>
+</header>
+
+<main style="display: flex; gap: 30px; padding: 40px; flex: 1;">
+
+    <section style="flex: 3; background-color: #4A4E52; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+
+        <div style="background: #D9D9D9; color: black; padding: 20px; border-radius: 10px; display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                <span>Game logic, working with offsets</span>
+                <span>+</span>
+            </div>
+
+            <div style="display: flex; gap: 15px; align-items: start;">
+                <div style="width: 70px; height: 70px; background: #999; border-radius: 5px;"></div> <div style="font-size: 13px; line-height: 1.4;">
+                <strong style="color: green;">stallman</strong><br>
+                Working with offsets in CS:GO and CS2 involves using specific memory addresses...
+            </div>
+            </div>
+        </div>
+
+    </section>
+
+    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px;">
+        <h2 style="font-size: 18px; margin: 0 0 10px 0;">Recent users</h2>
+        <div style="color: #4CAF50;">stallman</div>
+        <div style="color: #F44336;">nix0n</div>
+        <div style="color: #4CAF50;">n1ghtm@re</div>
+    </aside>
+
+</main>
+
+</body>
+<footer style="display: flex; flex-direction: row;background: #D9D9D9; margin-top: 50px; padding: 20px; text-align: center; border-top: 1px solid #ccc;">
+    <div style="display: flex; flex-direction: column; width: 200px">
+        <p class="text-9"><span class="text-black">Evil Corporation INC</span></p>
+        <p class="text-10"><span class="text-black">about us</span></p>
+        <p class="text-11"><span class="text-black">what do we do</span></p>
+        <div class="rectangle-5-12"></div>
+
+    </div>
+    <p class="text-13"><span class="text-black">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</span>
+    </p>
+    <img src="https://imgs.search.brave.com/4zxVamYqfcBsaThy3KHi1CFMXaqS_DJfgAtD_JDlVyQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9haWZy/ZWVpbWFnZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI1/LzA0L3JpY2hhcmQt/c3RhbGxtYW4tMTAy/NHg2ODMucG5n"
+         alt="stallman" style="width: 200px; height: 100px">
+
+</footer>
+<script>
+    async function loadThread() {
+
+        const params = new URLSearchParams(window.location.search);
+        const threadId = params.get('id') || 1;
+
+        const res = await fetch(`http://localhost:8080/threads/${threadId}`);
+
+        const thread =await res.json();
+
+        if (thread) {
+            const container = document.querySelector('section');
+            container.innerHTML = `
+                <div style="background: #D9D9D9; color: black; padding: 20px; border-radius: 10px;">
+                    <div style="font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                        ${thread.topic}
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>${thread.owner}</strong>: ${thread.content}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+
+    loadThread();
+</script>
+
+</html>

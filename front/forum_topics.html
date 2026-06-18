@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head><body style="margin: 0; background-color: #222; color: white; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column;">
+
+<header style="padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin: 0; font-size: 24px;">Evil Corporation</h1>
+    <nav style="display: flex; gap: 20px;">
+<!--        <span>profile</span><span>settings</span><span>support</span>-->
+    </nav>
+</header>
+
+<main style="display: flex; gap: 30px; padding: 40px; flex: 1;">
+
+    <div style="flex: 3; background-color: #4A4E52; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+    <!--        <div style="background: #D9D9D9; color: black; padding: 15px; border-radius: 10px;">-->
+    <!--            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px;">-->
+    <!--                <span>CS:GO</span> <span>+</span>-->
+    <!--            </div>-->
+    <!--            <div style="display: flex; justify-content: space-between;">-->
+    <!--                <span>Game logic, working with offsets</span>-->
+    <!--                <span style="font-size: 12px;">stallman</span>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    </div>
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <a id="new-thread-btn" href="/new-thread" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ New Thread</a>
+    </div>
+    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 20px;">
+        <h2 style="font-size: 18px; margin-bottom: 15px;">Recent users</h2>
+        <div style="color: #4CAF50;">stallman</div>
+        <div style="color: #F44336;">nix0n</div>
+        <div style="color: #4CAF50;">n1ghtm@re</div>
+    </aside>
+
+</main>
+
+</body>
+<footer style="display: flex; flex-direction: row;background: #D9D9D9; margin-top: 50px; padding: 20px; text-align: center; border-top: 1px solid #ccc;">
+    <div style="display: flex; flex-direction: column; width: 200px">
+        <p class="text-9"><span class="text-black">Evil Corporation INC</span></p>
+        <p class="text-10"><span class="text-black">about us</span></p>
+        <p class="text-11"><span class="text-black">what do we do</span></p>
+        <div class="rectangle-5-12"></div>
+
+    </div>
+    <p class="text-13"><span class="text-black">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</span>
+    </p>
+    <img src="https://imgs.search.brave.com/4zxVamYqfcBsaThy3KHi1CFMXaqS_DJfgAtD_JDlVyQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9haWZy/ZWVpbWFnZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI1/LzA0L3JpY2hhcmQt/c3RhbGxtYW4tMTAy/NHg2ODMucG5n" alt="stallman" style="width: 200px; height: 100px">
+
+</footer>
+<script>
+
+
+    async function loadThreads() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category');
+            const newThreadBtn = document.getElementById('new-thread-btn');
+            if (newThreadBtn && category) {
+                newThreadBtn.href = `/new-thread?category=${encodeURIComponent(category)}`;
+            }
+
+            let url = 'http://localhost:8080/threads';
+            if (category) {
+                url += `?category=${decodeURIComponent( category)}`;
+            }
+            const response = await fetch(url);
+            const threads = await response.json();
+
+            const container = document.querySelector('main > div');
+            container.innerHTML = '';
+
+            threads.forEach(t => {
+                const card = document.createElement('a');
+                card.href = `/thread?id=${t.id}`;
+                card.style.cssText = "display: block; text-decoration: none; color: black; background: #D9D9D9; padding: 20px; margin-bottom: 10px; border-radius: 10px;";
+
+                card.innerHTML = `
+        <div style="font-weight: bold;">${t.topic}</div>
+        <div style="font-size: 13px;">${t.content.substring(0, 50)}...</div>
+    `;
+
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки:", err);
+        }
+    }
+
+
+    window.onload = loadThreads;
+</script>
+
+</html>
