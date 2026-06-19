@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Указываем путь к фронтенду
-const frontDir = path.join(process.env.LAMBDA_TASK_ROOT, 'front');
+const frontDir = path.join(process.env.LAMBDA_TASK_ROOT, '../../front');
 app.use(express.static(frontDir));
 
 // Внимание: данные в памяти будут сбрасываться на Netlify
