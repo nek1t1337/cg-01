@@ -18,6 +18,7 @@ const frontDir = path.join(process.env.LAMBDA_TASK_ROOT, 'front');
 app.use(express.static(frontDir));
 
 // Внимание: данные в памяти будут сбрасываться на Netlify
+const path = require('path');
 let users = [{ id: 1, username: 'stallman', password: '123', role: 'user' }];
 let threads = [{ id: 1, owner: 'stallman', category: 'CS:GO', topic: 'Welcome', content: 'Game logic, working with offsets' }];
 
