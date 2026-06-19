@@ -26,6 +26,10 @@
     <!--                <span style="font-size: 12px;">stallman</span>-->
     <!--            </div>-->
     <!--        </div>-->
+        <div style="margin-top: auto; display: flex; justify-content: flex-start;">
+            <a href="/" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">Back</a>
+        </div>
+
     </div>
     <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
         <a id="new-thread-btn" href="/new-thread" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ New Thread</a>
@@ -71,7 +75,6 @@
             const data = await response.json(); 
 
             const container = document.querySelector('main > div');
-            container.innerHTML = '';
 
             data.threads.forEach(t => {
                 const card = document.createElement('a');
