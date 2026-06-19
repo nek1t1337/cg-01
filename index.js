@@ -5,7 +5,7 @@ const cors = require('cors');
 const {join} = require("node:path");
 
 const app = express();
-const PORT = 8080;
+const PORT = 80;
 const JWT_SECRET = 'h4l30e030j3je03je93-123';
 
 const cookieParser = require('cookie-parser');
