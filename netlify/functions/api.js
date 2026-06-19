@@ -71,17 +71,37 @@ app.get('/forum-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'for
 app.get('/threads-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topics.html')));
 app.get('/new-thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_new_thread.html')));
 app.get('/thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topic_stallman.html')));
-
 app.get('/threads', authenticate, async (req, res) => {
-    const { category } = req.query;
+    let { category, page = 1, limit = 10 } = req.query;
+
+    // Принудительное ограничение: максимум 10 записей
+    limit = Math.min(parseInt(limit), 10);
+    const offset = (parseInt(page) - 1) * limit;
+
     try {
+        let query = 'SELECT * FROM threads';
+        let countQuery = 'SELECT COUNT(*) FROM threads';
+        let values = [];
+
         if (category) {
-            const result = await db.query('SELECT * FROM threads WHERE category = $1', [category]);
-            res.json(result.rows);
-        } else {
-            const result = await db.query('SELECT * FROM threads');
-            res.json(result.rows);
+            query += ' WHERE category = $1';
+            countQuery += ' WHERE category = $1';
+            values.push(category);
         }
+
+        const countRes = await db.query(countQuery, values);
+        const total = parseInt(countRes.rows[0].count);
+
+        query += ` ORDER BY id DESC LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
+        values.push(limit, offset);
+
+        const result = await db.query(query, values);
+
+        res.json({
+            threads: result.rows,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page)
+        });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

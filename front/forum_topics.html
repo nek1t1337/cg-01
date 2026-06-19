@@ -56,42 +56,54 @@
 <script>
 
 
-    async function loadThreads() {
+    async function loadThreads(page = 1) {
         try {
             const params = new URLSearchParams(window.location.search);
             const category = params.get('category');
+
+            
+            let url = `/threads?page=${page}&limit=10`;
+            if (category) url += `&category=${encodeURIComponent(category)}`;
             const newThreadBtn = document.getElementById('new-thread-btn');
             if (newThreadBtn && category) {
                 newThreadBtn.href = `/new-thread?category=${encodeURIComponent(category)}`;
             }
-
-            let url = '/threads';
-            if (category) {
-                url += `?category=${decodeURIComponent( category)}`;
-            }
             const response = await fetch(url);
-            const threads = await response.json();
+            const data = await response.json(); 
 
             const container = document.querySelector('main > div');
             container.innerHTML = '';
 
-            threads.forEach(t => {
+            data.threads.forEach(t => {
                 const card = document.createElement('a');
                 card.href = `/thread?id=${t.id}`;
                 card.style.cssText = "display: block; text-decoration: none; color: black; background: #D9D9D9; padding: 20px; margin-bottom: 10px; border-radius: 10px;";
-
-                card.innerHTML = `
-        <div style="font-weight: bold;">${t.topic}</div>
-        <div style="font-size: 13px;">${t.content.substring(0, 50)}...</div>
-    `;
-
+                card.innerHTML = `<div style="font-weight: bold;">${t.topic}</div><div style="font-size: 13px;">${t.content.substring(0, 50)}...</div>`;
                 container.appendChild(card);
             });
-        } catch (err) {
-            console.error("Ошибка загрузки:", err);
-        }
+
+            renderPagination(data.totalPages, page);
+        } catch (err) { console.error("Ошибка:", err); }
     }
 
+    function renderPagination(totalPages, currentPage) {
+        let container = document.getElementById('pagination');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'pagination';
+            container.style.cssText = "display: flex; gap: 10px; justify-content: center; margin-top: 20px;";
+            document.querySelector('main > div').appendChild(container);
+        }
+        container.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            btn.style.cssText = `padding: 5px 10px; cursor: pointer; ${i === currentPage ? 'background: #4CAF50; color: white;' : ''}`;
+            btn.onclick = () => loadThreads(i);
+            container.appendChild(btn);
+        }
+    }
 
     window.onload = loadThreads;
 </script>
