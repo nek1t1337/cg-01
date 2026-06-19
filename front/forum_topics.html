@@ -65,7 +65,7 @@
                 newThreadBtn.href = `/new-thread?category=${encodeURIComponent(category)}`;
             }
 
-            let url = 'http://localhost:8080/threads';
+            let url = '/threads';
             if (category) {
                 url += `?category=${decodeURIComponent( category)}`;
             }

@@ -65,7 +65,7 @@
         const params = new URLSearchParams(window.location.search);
         const threadId = params.get('id') || 1;
 
-        const res = await fetch(`http://localhost:8080/threads/${threadId}`);
+        const res = await fetch(`/threads/${threadId}`);
 
         const thread =await res.json();
 
