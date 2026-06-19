@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors());
 
-const frontDir = path.join(__dirname, 'front');
+const frontDir = path.join(__dirname,'..','..','front');
 
 const authenticate = async (req, res, next) => {
     const token = req.cookies.token;
