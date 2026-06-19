@@ -30,11 +30,9 @@
     <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
         <a id="new-thread-btn" href="/new-thread" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ New Thread</a>
     </div>
-    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 20px;">
+    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 20px;" id="recent-users-list">
         <h2 style="font-size: 18px; margin-bottom: 15px;">Recent users</h2>
-        <div style="color: #4CAF50;">stallman</div>
-        <div style="color: #F44336;">nix0n</div>
-        <div style="color: #4CAF50;">n1ghtm@re</div>
+
     </aside>
 
 </main>
@@ -56,7 +54,8 @@
 <script>
 
 
-    async function loadThreads(page = 1) {
+    async function loadThreads( page = 1) {
+
         try {
             const params = new URLSearchParams(window.location.search);
             const category = params.get('category');
@@ -97,15 +96,55 @@
         container.innerHTML = '';
 
         for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.innerText = i;
-            btn.style.cssText = `padding: 5px 10px; cursor: pointer; ${i === currentPage ? 'background: #4CAF50; color: white;' : ''}`;
-            btn.onclick = () => loadThreads(i);
-            container.appendChild(btn);
+                const btn = document.createElement('a');
+                const params = new URLSearchParams(window.location.search);
+                const category = params.get('category');
+                btn.innerText = i;
+            btn.style.cssText = `
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            ${i === currentPage
+                ? 'background: #4CAF50; color: white; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);'
+                : 'background: #5A5E62; color: #ccc;'}
+        `;
+
+            btn.onmouseover = () => { if (i !== currentPage) btn.style.background = '#6A6E72'; };
+            btn.onmouseout = () => { if (i !== currentPage) btn.style.background = '#5A5E62'; };           btn.href = `/threads-page?category=${encodeURIComponent(category)}&limit=10&page=${i}`;
+                console.log(btn)
+                container.appendChild(btn);
         }
     }
+    async function loadRecentUsers() {
+        try {
+            const response = await fetch('/recent-users');
+            const users = await response.json();
+            const listContainer = document.getElementById('recent-users-list');
+            listContainer.innerHTML = '';
 
-    window.onload = loadThreads;
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.style.color = '#4CAF50';
+                div.innerText = u.username;
+                listContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки юзеров:", err);
+        }
+    }
+    window.onload = (evt) => {
+        evt.preventDefault()
+        loadRecentUsers()
+        const params = new URLSearchParams(window.location.search);
+        let page = params.get('page');
+        if (page === null || page === undefined || page === '') {
+            page = 1
+        }
+        loadThreads(page)
+    }
 </script>
 
 </html>

@@ -21,16 +21,25 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors());
 
-const frontDir = path.join(__dirname, '..', '..', 'front');
+const frontDir = path.join(__dirname, 'front');
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: 'Нет доступа' });
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(403).json({ message: 'Токен недействителен' });
-        req.user = decoded;
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+
+        const result = await db.query('SELECT username, role FROM users WHERE username = $1', [decoded.username]);
+
+        if (result.rows.length === 0) return res.status(403).json({ message: 'Пользователь удален' });
+
+        req.user = result.rows[0];
         next();
-    });
+    } catch (err) {
+        return res.status(403).json({ message: 'Токен недействителен' });
+    }
 };
 
 const checkAuth = (req, res, next) => {
@@ -42,18 +51,36 @@ const checkAuth = (req, res, next) => {
         next();
     });
 };
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
+
     try {
-        const result = await db.query('SELECT * FROM users WHERE username = $1 AND password = $2', [username, password]);
-        if (result.rows.length === 0) return res.status(401).json({ message: 'Ошибка входа' });
+
+        let result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        if (result.rows.length === 0) {
+
+            await db.query(
+                'INSERT INTO users (username, password, role) VALUES ($1, $2, $3)',
+                [username, password, 'user']
+            );
+
+        } else {
+
+            if (result.rows[0].password !== password) {
+                return res.status(401).json({ message: 'Неверный пароль' });
+            }
+        }
+
+
         const token = jwt.sign({ username: username }, JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
-        res.json({ message: 'Вход выполнен' });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
+        res.json({ message: 'Авторизация успешна' });
 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 app.get('/', (req, res) => {
     const token = req.cookies.token;
     if (token) {
@@ -65,7 +92,7 @@ app.get('/', (req, res) => {
         res.sendFile(join(frontDir, 'desktop.html'));
     }
 });
-
+app.get('/styles.css', (req, res) => res.sendFile(join(frontDir, 'styles.css')));
 app.get('/login', (req, res) => res.sendFile(join(frontDir, 'desktop.html')));
 app.get('/forum-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum.html')));
 app.get('/threads-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topics.html')));
@@ -74,7 +101,7 @@ app.get('/thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_t
 app.get('/threads', authenticate, async (req, res) => {
     let { category, page = 1, limit = 10 } = req.query;
 
-    // Принудительное ограничение: максимум 10 записей
+
     limit = Math.min(parseInt(limit), 10);
     const offset = (parseInt(page) - 1) * limit;
 
@@ -104,6 +131,28 @@ app.get('/threads', authenticate, async (req, res) => {
         });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
+app.get('/recent-users', async (req, res) => {
+    try {
+        const result = await db.query('SELECT username FROM users ORDER BY id DESC LIMIT 5');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+app.get('/threads/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await db.query('SELECT * FROM threads WHERE id = $1', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Тред не найден' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.post('/threads', authenticate, async (req, res) => {
     const { category, topic, content } = req.body;
@@ -119,7 +168,14 @@ app.post('/threads', authenticate, async (req, res) => {
 app.delete('/threads/:id', authenticate, async (req, res) => {
     try {
         const thread = await db.query('SELECT owner FROM threads WHERE id = $1', [req.params.id]);
-        if (thread.rows.length > 0 && thread.rows[0].owner === req.user.username) {
+
+        if (thread.rows.length === 0) return res.status(404).json({ message: 'Тред не найден' });
+
+
+        const isOwner = thread.rows[0].owner === req.user.username;
+        const isAdmin = req.user.role === 'admin';
+
+        if (isOwner || isAdmin) {
             await db.query('DELETE FROM threads WHERE id = $1', [req.params.id]);
             res.json({ message: 'Удалено' });
         } else {
@@ -127,5 +183,6 @@ app.delete('/threads/:id', authenticate, async (req, res) => {
         }
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
 
 module.exports.handler = serverless(app);

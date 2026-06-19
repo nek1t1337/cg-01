@@ -46,13 +46,9 @@
         </div>
 
     </div>
-    <div style="background-color: #6D6464; width: 200px; height: 500px; border-radius: 30px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: white; font-family: sans-serif;">
+    <div style="background-color: #6D6464; width: 200px; height: 500px; border-radius: 30px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: white; font-family: sans-serif;" id="recent-users-list">
 
         <div style="font-size: 18px; margin-bottom: 10px;">Recent users</div>
-
-        <div style="color: #4CAF50;">stallman</div>
-        <div style="color: #F44336;">nix0n</div>
-        <div style="color: #4CAF50;">n1ghtm@re</div>
 
     </div>
 </div>
@@ -70,6 +66,26 @@
 
 </footer>
 <script>
+    async function loadRecentUsers() {
+        try {
+            const response = await fetch('/recent-users');
+            const users = await response.json();
+            const listContainer = document.getElementById('recent-users-list');
+            listContainer.innerHTML = '';
+
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.style.color = '#4CAF50';
+                div.innerText = u.username;
+                listContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки юзеров:", err);
+        }
+    }
+    window.onload = () => {
+        loadRecentUsers()
+    }
     document.querySelectorAll('.body > div:first-child > div > div > div').forEach(item => {
         item.style.cursor = 'pointer';
         item.addEventListener('mouseover', () => item.style.backgroundColor = '#bbb');

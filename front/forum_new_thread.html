@@ -28,11 +28,9 @@
         </button>
     </section>
 
-    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px;">
+    <aside style="flex: 1; background-color: #6D6464; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px;" id="recent-users-list">
         <h2 style="font-size: 18px; margin: 0 0 10px 0;">Recent users</h2>
-        <div style="color: #4CAF50;">stallman</div>
-        <div style="color: #F44336;">nix0n</div>
-        <div style="color: #4CAF50;">n1ghtm@re</div>
+
     </aside>
 
 </main>
@@ -58,7 +56,6 @@
 
         const topic = topicInput.value.trim();
         const content = contentInput.value.trim();
-        const token = localStorage.getItem('token');
 
         
         const params = new URLSearchParams(window.location.search);
@@ -69,10 +66,7 @@
             return;
         }
 
-        if (!token) {
-            alert('Ошибка: Вы не авторизованы (токен не найден).');
-            return;
-        }
+
 
         
         const payload = { topic, content };
@@ -85,7 +79,6 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(payload)
             });
@@ -106,6 +99,44 @@
             alert('Сервер недоступен. Проверьте консоль и server.js');
         }
     }
+    async function loadRecentUsers() {
+        try {
+            const response = await fetch('/recent-users');
+            const users = await response.json();
+            const listContainer = document.getElementById('recent-users-list');
+            listContainer.innerHTML = '';
+
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.style.color = '#4CAF50';
+                div.innerText = u.username;
+                listContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки юзеров:", err);
+        }
+    }
+    async function loadRecentUsers() {
+        try {
+            const response = await fetch('/recent-users');
+            const users = await response.json();
+            const listContainer = document.getElementById('recent-users-list');
+            listContainer.innerHTML = '';
+
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.style.color = '#4CAF50';
+                div.innerText = u.username;
+                listContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки юзеров:", err);
+        }
+    }
+    window.onload = () => {
+        loadRecentUsers()
+    }
+
 </script>
 
 </body>
