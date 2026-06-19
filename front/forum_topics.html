@@ -81,7 +81,7 @@
                 card.href = `/thread?id=${t.id}`;
                 card.style.cssText = "display: block; text-decoration: none; color: black; background: #D9D9D9; padding: 20px; margin-bottom: 10px; border-radius: 10px;";
                 card.innerHTML = `<div style="font-weight: bold;">${t.topic}</div><div style="font-size: 13px;">${t.content.substring(0, 50)}...</div>`;
-                container.appendChild(card);
+                container.prepend(card);
             });
 
             renderPagination(data.totalPages, page);
