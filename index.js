@@ -108,11 +108,22 @@ app.get('/threads-page', checkAuth, (req, res) => {
 
     return res.sendFile(join(frontDir, 'forum_topics.html'));
 });
-app.get('/new-thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_new_thread.html')));
+app.get('/new-thread', checkAuth, (req, res) => {
+    const categoryName = req.query.category;
+
+
+    if (!categoryName || !allowed.includes(categoryName.toUpperCase())) {
+        return res.status(400).send('Invalid category.');
+    }
+
+    return res.sendFile(join(frontDir, 'forum_new_thread.html'))
+});
 app.get('/thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topic_stallman.html')));
 app.get('/threads', authenticate, async (req, res) => {
     let { category, page = 1, limit = 10 } = req.query;
-
+    if (!category || !allowed.includes(category.toUpperCase())) {
+        return res.status(400).send('Invalid category.');
+    }
     
     limit = Math.min(parseInt(limit), 10);
     const offset = (parseInt(page) - 1) * limit;
@@ -123,6 +134,9 @@ app.get('/threads', authenticate, async (req, res) => {
         let values = [];
 
         if (category) {
+
+
+
             query += ' WHERE category = $1';
             countQuery += ' WHERE category = $1';
             values.push(category);
