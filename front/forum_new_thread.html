@@ -36,17 +36,16 @@
 </main>
 
 
-<footer style="display: flex; flex-direction: row; background: #D9D9D9; margin-top: auto; padding: 20px; text-align: center; border-top: 1px solid #ccc; color: black;">
-    <div style="display: flex; flex-direction: column; width: 200px; margin-right: 20px;">
-        <p style="margin: 0; font-weight: bold;">Evil Corporation INC</p>
-        <p style="margin: 5px 0;">about us</p>
-        <p style="margin: 5px 0;">what do we do</p>
+<footer class="footer">
+    <div class="footer-grid">
+        <p class="text-9"><span class="text-black">Evil Corporation INC</span></p>
+        <p class="text-10"><span class="text-black">about us</span></p>
+        <p class="text-11"><span class="text-black">what do we do</span></p>
+        <div class="rectangle-5-12"></div>
+
     </div>
-    <div style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
-        <p style="margin: 0; font-style: italic; max-width: 60%;">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</p>
-        <img src="https://imgs.search.brave.com/4zxVamYqfcBsaThy3KHi1CFMXaqS_DJfgAtD_JDlVyQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9haWZy/ZWVpbWFnZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI1/LzA0L3JpY2hhcmQt/c3RhbGxtYW4tMTAy/NHg2ODMucG5n"
-             alt="stallman" style="width: 150px; height: auto; border-radius: 5px;">
-    </div>
+    <p class="text-13"><span class="text-black">«С программным обеспечением есть только две возможности: либо пользователи контролируют программу, либо программа контролирует пользователей».</span>
+    </p>
 </footer>
 
 <script>
@@ -99,23 +98,7 @@
             alert('Сервер недоступен. Проверьте консоль и server.js');
         }
     }
-    async function loadRecentUsers() {
-        try {
-            const response = await fetch('/recent-users');
-            const users = await response.json();
-            const listContainer = document.getElementById('recent-users-list');
-            listContainer.innerHTML = '';
 
-            users.forEach(u => {
-                const div = document.createElement('div');
-                div.style.color = '#4CAF50';
-                div.innerText = u.username;
-                listContainer.appendChild(div);
-            });
-        } catch (err) {
-            console.error("Ошибка загрузки юзеров:", err);
-        }
-    }
     async function loadRecentUsers() {
         try {
             const response = await fetch('/recent-users');
