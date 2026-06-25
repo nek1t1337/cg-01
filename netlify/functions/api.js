@@ -10,7 +10,7 @@ const serverless = require('serverless-http');
 const path = require('path');
 
 const app = express();
-const JWT_SECRET = 'h4l30e030j3je03je93-123';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const db = new Client({
     connectionString: process.env.DATABASE_URL,
