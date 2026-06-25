@@ -20,7 +20,10 @@ db.connect();
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors());
-
+const allowed = [
+    'CS:GO', 'MINECRAFT', 'DOTA 2', 'WORK',
+    'BEAUTIFUL PLACES', 'BUSINESS', 'OS', 'NETWORK', 'PYTHON'
+];
 const frontDir = path.join(__dirname, 'front');
 
 const authenticate = async (req, res, next) => {
@@ -95,7 +98,16 @@ app.get('/', (req, res) => {
 app.get('/styles.css', (req, res) => res.sendFile(join(frontDir, 'styles.css')));
 app.get('/login', (req, res) => res.sendFile(join(frontDir, 'desktop.html')));
 app.get('/forum-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum.html')));
-app.get('/threads-page', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topics.html')));
+app.get('/threads-page', checkAuth, (req, res) => {
+    const categoryName = req.query.category;
+
+
+    if (!categoryName || !allowed.includes(categoryName.toUpperCase())) {
+        return res.status(400).send('Invalid category.');
+    }
+
+    return res.sendFile(join(frontDir, 'forum_topics.html'));
+});
 app.get('/new-thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_new_thread.html')));
 app.get('/thread', checkAuth, (req, res) => res.sendFile(join(frontDir, 'forum_topic_stallman.html')));
 app.get('/threads', authenticate, async (req, res) => {
@@ -156,6 +168,9 @@ app.get('/threads/:id', authenticate, async (req, res) => {
 
 app.post('/threads', authenticate, async (req, res) => {
     const { category, topic, content } = req.body;
+    if (!category || !allowed.includes(category.toUpperCase())) {
+        return res.status(400).send('Invalid category.');
+    }
     try {
         const result = await db.query(
             'INSERT INTO threads (owner, category, topic, content) VALUES ($1, $2, $3, $4) RETURNING *',
