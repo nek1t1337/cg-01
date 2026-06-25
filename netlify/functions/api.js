@@ -53,7 +53,9 @@ const checkAuth = (req, res, next) => {
 };
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-
+    if (username.length  <= 3 || password.length <= 3) {
+        return res.status(401).json({ message: 'Имя пользователя и пароль должны быть больше 3 символов' });
+    }
     try {
 
         let result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
